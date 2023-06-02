@@ -1,6 +1,6 @@
 import { DatumParsed } from '@/sterling-connection';
 import { createSelector } from '@reduxjs/toolkit';
-import { isUndefined } from 'lodash';
+import { isUndefined } from 'lodash-es';
 import { DataState } from './data';
 
 /**

@@ -1,4 +1,4 @@
-import produce, { castDraft } from 'immer';
+import { produce, castDraft } from 'immer';
 import { Edge, Graph, Node } from '../types';
 import { getEdge } from './getEdge';
 import { _reverseEdge } from './producers/_reverseEdge';

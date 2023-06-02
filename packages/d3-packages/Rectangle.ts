@@ -1,73 +1,137 @@
-import {Shape} from './Shape'
-import { require as d3require } from 'd3-require';
-const d3 = require("d3")
-import {BoundingBox, Coords} from './VisualObject'
+import { Shape, ShapeProps } from './Shape';
+import * as d3 from 'd3';
+import { BoundingBox, Coords, toFunc } from './Utility';
 
+export interface RectangleProps extends ShapeProps {
+  height: number | (() => number);
+  width: number | (() => number);
+  coords?: Coords | (() => Coords);
+  labelLocation?: string;
+}
 
-export class Rectangle extends Shape{
-    height: number;
-    width: number;
+export class Rectangle extends Shape {
+  height: () => number;
+  width: () => number;
+  labelLocation: string;
 
-    /**
-     * Creates a logical rectangle object
-     * @param height height (y direction)
-     * @param width width (x direction)
-     * @param coords coordinates of the top-left point
-     * @param color color for interior
-     * @param borderWidth width of border
-     * @param borderColor color of border
-     * @param label text for label
-     * @param labelColor color for label text
-     * @param labelSize size of label text
-     */
-    constructor(
-        height: number,
-        width: number,
-        coords?: Coords,
-        color?: string,
-        borderWidth?: number,
-        borderColor?: string,
-        label?: string,
-        labelColor?: string,
-        labelSize?: number
-    ){
-        super(coords, color, borderWidth, borderColor, label, labelColor, labelSize)
-        this.height = height
-        this.width = width
-        this.label.setCenter(this.center()) //TODO: FIX THIS
+  /**
+   * Creates a logical rectangle object
+   * @param height height (y direction)
+   * @param width width (x direction)
+   * @param coords coordinates of the top-left point
+   * @param color color for interior
+   * @param borderWidth width of border
+   * @param borderColor color of border
+   * @param label text for label
+   * @param labelColor color for label text
+   * @param labelSize size of label text
+   */
+  constructor(props: RectangleProps) {
+    super(props);
+    this.height = toFunc(0, props.height);
+    this.width = toFunc(0, props.width);
+    let coordsFunc = toFunc({ x: 0, y: 0 }, props.coords);
+    this.labelLocation = props.labelLocation ?? 'center';
+    this.center = () => {
+      return {
+        x: coordsFunc().x + this.width() / 2,
+        y: coordsFunc().y + this.height() / 2
+      };
+    };
+    this.setLabelLocation();
+  }
+
+  boundingBox(): BoundingBox {
+    return {
+      top_left: {
+        x: this.center().x - this.width() / 2,
+        y: this.center().y - this.height() / 2
+      },
+      bottom_right: {
+        x: this.center().x + this.width() / 2,
+        y: this.center().y + this.height() / 2
+      }
+    };
+  }
+
+  setLabelLocation() {
+    switch (this.labelLocation) {
+      case 'topLeft':
+        this.label.setCenter(() => {
+          return {
+            x:
+              this.center().x -
+              this.width() / 2 +
+              this.label.text().length * 2.5,
+            y: this.center().y - this.height() / 2 - this.label.fontSize() * 1
+          };
+        });
+        break;
+      case 'topRight':
+        this.label.setCenter(() => {
+          return {
+            x:
+              this.center().x +
+              this.width() / 2 -
+              this.label.text().length * 2.5,
+            y: this.center().y - this.height() / 2 - this.label.fontSize() * 1
+          };
+        });
+        break;
+      case 'bottomRight':
+        this.label.setCenter(() => {
+          return {
+            x:
+              this.center().x +
+              this.width() / 2 -
+              this.label.text().length * 2.5,
+            y: this.center().y + this.height() / 2 + this.label.fontSize() * 1
+          };
+        });
+        break;
+      case 'bottomLeft':
+        this.label.setCenter(() => {
+          return {
+            x:
+              this.center().x -
+              this.width() / 2 +
+              this.label.text().length * 2.5,
+            y: this.center().y + this.height() / 2 + this.label.fontSize() * 1
+          };
+        });
+        break;
     }
+  }
 
-    boundingBox(): BoundingBox {
-        return {
-            top_left: {x:this.coords.x, y: this.coords.y},
-            bottom_right: {x:this.coords.x + this.width, y: this.coords.y + this.height}
-        }
-    }
-    setWidth(width: number){this.width = width}
-    setHeight(height: number){this.height = height}
+  setWidth(width: number | (() => number)) {
+    this.width = toFunc(this.width(), width);
+  }
+  setHeight(height: number | (() => number)) {
+    this.height = toFunc(this.height(), height);
+  }
 
-    override center(): Coords{
-        return {x: this.coords.x + (this.width ?? 0)/2, y: this.coords.y + (this.height ?? 0)/2} //shitfix
-    }
+  render(svg: any, parent_masks?: BoundingBox[]) {
+    let maskIdentifier: string = '';
 
-    override setCenter(center: Coords){
-        this.coords = {
-            x: center.x - this.width/2,
-            y: center.y - this.height/2
-        }
-        this.label.setCenter(center)
+    let render_masks: BoundingBox[];
+    if (parent_masks) {
+      render_masks = this.masks.concat(parent_masks);
+    } else {
+      render_masks = this.masks;
     }
+    maskIdentifier = this.addMaskRender(render_masks, svg);
 
-    render(svg: any){
-        d3.select(svg)
-            .append('rect')
-            .attr('x', this.coords.x)
-            .attr('y', this.coords.y)
-            .attr('width', this.width)
-            .attr('height', this.height)
-            .attr('stroke-width', this.borderWidth)
-            .attr('stroke', this.borderColor)
-            .attr('fill', this.color)
-        super.render(svg)
-    }
+    d3.select(svg)
+      .append('rect')
+      .attr('x', this.center().x - this.width() / 2)
+      .attr('y', this.center().y - this.height() / 2)
+      .attr('width', this.width())
+      .attr('height', this.height())
+      .attr('stroke-width', this.borderWidth())
+      .attr('stroke', this.borderColor())
+      .attr('fill', this.color())
+      .attr('mask', (render_masks.length > 0) ? `url(#${maskIdentifier})` : '')
+      .attr('opacity', this.opacity());
+    super.render(svg, render_masks);
+  }
 }

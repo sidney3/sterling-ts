@@ -7,8 +7,9 @@
         "dom",
         "dom.iterable",
         "esnext"
-      ],
-      "allowJs": false,
+      ],      
+      "esModuleInterop": true,
+      "allowJs": true,
       "allowSyntheticDefaultImports": true,
       "jsx": "react-jsx",
       "isolatedModules": true,

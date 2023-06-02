@@ -3,14 +3,17 @@ import { AppDispatch, RootState } from '../../../store/store';
 import { Gesture } from '../gesture';
 import { ZoomTransformSetter } from '../middleware';
 
+console.log("mouseWheeled: top level")
 /**
  * The mouse wheel has been wheeled. Check for zoom or spread.
  */
 const onMouseWheeledHandler = (gesture: Gesture, setZoomTransform: ZoomTransformSetter) => {
+    console.log("mouseWheeled: handler (outer)")
     return (state: RootState, next: AppDispatch, event: WheelEvent) => {
         // Prevent further event-handlers from being called for this event. 
         // (e.g., the handler that would cause the entire Sterling window to zoom)
-        event.stopImmediatePropagation();
+        console.log("mouseWheeled: handler (inner)")
+        //event.stopImmediatePropagation();
         if (event.shiftKey) {
 
             // The spread matrix has to go to the store because it need to be applied to

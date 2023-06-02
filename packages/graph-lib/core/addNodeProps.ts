@@ -1,7 +1,7 @@
-import produce from 'immer';
+import {produce} from 'immer';
 import { Edge, Graph, Node } from '../types';
 import { getNodes } from './getNodes';
-import { assign, isFunction } from 'lodash';
+import { assign, isFunction } from 'lodash-es';
 
 export function addNodeProps<N extends Node, E extends Edge, NN extends {}>(
   graph: Graph<N, E>,

@@ -1,5 +1,4 @@
-
-{ 
+{
   // Change this to match your project
   "include": ["**.ts"],
   "compilerOptions": {
@@ -14,9 +13,11 @@
     // Types should go into this directory.
     // Removing this would place the .d.ts files
     // next to the .js files
-    "outDir": "d3lib-defs",
+    "outDir": "d3-defs",
     // go to js file when using IDE functions like
     // "Go to Definition" in VSCode
-    "declarationMap": true
+    "declarationMap": true,
+    // We want to include strict checking (useful for VSCode, too)
+    "strict": true,
   }
 }

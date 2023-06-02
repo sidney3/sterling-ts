@@ -1,7 +1,7 @@
 import { GraphGroup, GraphProps, GraphSVGDiv } from '@/graph-svg';
 import { DatumParsed } from '@/sterling-connection';
 import { Vector2 } from '@/vector2';
-import { throttle } from 'lodash';
+import { throttle } from 'lodash-es';
 import { useCallback } from 'react';
 import { Matrix } from 'transformation-matrix';
 import {

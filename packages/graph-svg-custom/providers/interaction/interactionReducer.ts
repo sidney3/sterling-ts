@@ -1,4 +1,4 @@
-import { defaultTo } from 'lodash';
+import { defaultTo } from 'lodash-es';
 import { useCallback } from 'react';
 import { WithInteractionCallbacks } from './interactionCallbacks';
 import { ClickNode, handleClickNode } from './reducers/clickNode';

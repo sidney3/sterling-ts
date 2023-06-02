@@ -1,1 +1,0 @@
-{"version":3,"file":"BinaryTree.d.ts","sourceRoot":"","sources":["../BinaryTree.ts"],"names":[],"mappings":"AAEA,UAAU,gBAAgB;IACtB,SAAS,EAAE,UAAU,CAAA;IACrB,UAAU,EAAE,UAAU,CAAA;CACzB;AACD,MAAM,CAAC,OAAO,OAAO,UAAU;IAC3B,SAAS,EAAC,UAAU,CAAA;IACpB,UAAU,EAAC,UAAU,CAAA;gBACT,QAAQ,EAAC,gBAAgB;CAMxC"}

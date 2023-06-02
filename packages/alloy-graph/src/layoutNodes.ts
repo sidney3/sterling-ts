@@ -3,7 +3,7 @@ import { Dict, PathDef } from '@graph-ts/graph-svg';
 import dagre from 'dagre';
 import { GraphComponents } from './getVisibleGraphComponents';
 
-export function layoutNodes(components: GraphComponents): AlloyNode[] {
+export function layoutNodes<N extends AlloyNode>(components: GraphComponents): N[] {
   const g = new dagre.graphlib.Graph({ multigraph: true });
   g.setGraph({ nodesep: 50, ranksep: 100, rankdir: 'TB' });
 
@@ -18,7 +18,7 @@ export function layoutNodes(components: GraphComponents): AlloyNode[] {
   dagre.layout(g);
   const { dx, dy } = centerOffset(g, 120, 65);
 
-  const nodes: AlloyNode[] = [];
+  const nodes: N[] = [];
   components.nodes.forEach((node) => {
     nodes.push({
       ...node,
@@ -28,7 +28,7 @@ export function layoutNodes(components: GraphComponents): AlloyNode[] {
   });
 
   return nodes;
-}
+}``
 
 function centerOffset(
   graph: dagre.graphlib.Graph,

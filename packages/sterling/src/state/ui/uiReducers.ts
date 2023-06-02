@@ -1,6 +1,6 @@
 import { PayloadAction } from '@reduxjs/toolkit';
 import { WritableDraft } from 'immer/dist/types/types-external';
-import { get, set } from 'lodash';
+import { get, set } from 'lodash-es';
 import {
   CommonDrawerView,
   GraphDrawerView,

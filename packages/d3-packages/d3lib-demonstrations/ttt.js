@@ -1,4 +1,5 @@
-require('d3')
+//note: run on DATUM ID 3
+
 const stage = new Stage()
 const boardGridProps = {
     grid_location: {

@@ -7,7 +7,7 @@ import {
   MenuItem,
   MenuList
 } from '@chakra-ui/react';
-import { keys } from 'lodash';
+import { keys } from 'lodash-es';
 import { useCallback } from 'react';
 import { IoMdAddCircleOutline } from 'react-icons/io';
 import { projectionAdded } from '../../../../../state/graphs/graphsSlice';

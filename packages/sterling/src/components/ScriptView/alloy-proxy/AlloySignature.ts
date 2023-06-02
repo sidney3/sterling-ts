@@ -181,12 +181,15 @@ class AlloySignature extends AlloySet {
 
         sigElements
             .map(sigEl => {
-
                 const id = sigEl.getAttribute('ID');
-                const parent = sigEl.getAttribute('parentID');
                 const label = sigEl.getAttribute('label');
-                if (!id) throw AlloyError.missingAttribute('AlloySignature', 'ID');
-                if (!parent && label !== 'univ') throw AlloyError.missingAttribute('AlloySignature', 'parentID');
+                
+                if (!id) 
+                  throw AlloyError.missingAttribute('AlloySignature', 'ID');
+                
+                const parent: string | null = AlloySignature.getParent(sigEl) 
+                if(!parent && label !== 'univ') // defensive check
+                  throw AlloyError.error('AlloySignature', `unable to resolve parent sig for non-univ sig ${label}`)
 
                 const signature = (label === 'Int' || label === 'seq/Int')
                     ? intsig
@@ -221,20 +224,61 @@ class AlloySignature extends AlloySet {
     }
 
     /**
-     * Get an array of signature types associated with an XML element. Typically
+     * Resolve the parent ID for this sig. This is complex because Alloy has 
+     * both "in" and "extends" subsigs. Alloy XML export will omit 'parentID' 
+     * field for "in" subsigs. Instead, the sig will contain a 'type' element 
+     * with 'ID' field referencing the sig that this sig will be a subset of. 
+     * 
+     * @param sigEl the HTML element for the signature
+     */
+    static getParent(sigEl: Element): string | null {
+        const parentID: string | null = sigEl.getAttribute('parentID');
+
+        const label: string | null = sigEl.getAttribute('label')
+        if (!parentID && label !== 'univ') {
+            // uncommon case: "in" subsig
+            const typeEls = sigEl.getElementsByTagName('type')
+            if(typeEls.length !== 1)
+              throw AlloyError.error('AlloySignature', `subset sig ${label} had no type or multiple types; this is unsupported`);
+            else if(!typeEls[0].getAttribute('ID')) 
+              throw AlloyError.missingAttribute('AlloySignature', 'type.ID')
+            else 
+              return typeEls[0].getAttribute('ID')
+        }
+
+        return parentID // common case: "extends" subsig or "univ" sig
+    }
+
+    /**
+     * Get one or more arrays of signature types associated with an XML element. Typically
      * this is used when parsing a field or skolem, as each ```<field>``` and ```<skolem>```
      * element will have a ```<types>``` child. This method parses the types defined
      * in this element and returns the corresponding signatures.
+     * 
+     * If a field contains a union in its type, Alloy XML will pass _multiple_ ```<types>```
+     * elements within the ```<field>```: one for each possible type. Thus, this function 
+     * returns an _array_ of arrays of AlloySignature.
      *
      * @param element The XML element that has a <types> child
      * @param sigIDs A map of signature IDs to signatures
      */
-    static typesFromXML (element: Element, sigIDs: Map<string, AlloySignature>): AlloySignature[] {
+    static typesFromXML (element: Element, sigIDs: Map<string, AlloySignature>): AlloySignature[][] {
 
-        const types = element.querySelector('types');
-        if (!types) throw AlloyError.missingElement('AlloyField', 'types');
+        const typesElements = element.querySelectorAll('types');
+        if (!typesElements) throw AlloyError.missingElement('AlloyField', 'types');
 
-        return Array.from(types.querySelectorAll('type'))
+        return Array.from(typesElements)
+            .map(typesElement => AlloySignature.typesFromXMLSingle(typesElement, sigIDs))
+    }
+
+    /**
+     * Private helper to handle a single ```<types>``` element 
+     * @param element The XML ```<types>``` element 
+     * @param sigIDs A map of signature IDs to signatures
+     * @returns an array of sigs representing the type defined by the element
+     */
+    private static typesFromXMLSingle (element: Element, sigIDs: Map<string, AlloySignature>): AlloySignature[] {
+        return Array.from(element.querySelectorAll('type'))
             .map(typeElement => {
 
                 const typeID = typeElement.getAttribute('ID');
@@ -248,6 +292,7 @@ class AlloySignature extends AlloySet {
             });
 
     }
+
 
 }
 

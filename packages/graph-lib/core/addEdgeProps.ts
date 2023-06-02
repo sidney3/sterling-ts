@@ -1,4 +1,4 @@
-import produce from 'immer';
+import {produce} from 'immer';
 import { Edge, Graph, Node } from '../types';
 import { getEdges } from './getEdges';
 import { assign, isFunction } from 'lodash-es';

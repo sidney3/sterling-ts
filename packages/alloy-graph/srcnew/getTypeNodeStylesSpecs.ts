@@ -1,5 +1,5 @@
 import { NodeStyleSpec, SterlingTheme } from '@/sterling-theme';
-import { flatten } from 'lodash';
+import { flatten } from 'lodash-es';
 
 /**
  * Get an ordered array of node style specs for the given type. Only explicitly

@@ -1,7 +1,7 @@
 import { PositionedNode, RoutedEdge } from '@/graph-lib';
 import { ShapeDef } from '@/graph-svg';
 import { add, subtract, Vector2 } from '@/vector2';
-import { defaultTo } from 'lodash';
+import { defaultTo } from 'lodash-es';
 import { applyToPoint, Matrix } from 'transformation-matrix';
 import { edgePoint } from './edgePoint';
 

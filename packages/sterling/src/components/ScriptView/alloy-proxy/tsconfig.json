@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
+    "strict": true,
     "module": "System",
     "moduleResolution": "node",
+    "esModuleInterop": true,
     "target": "es5",
     "sourceMap": false,
     "declaration": true,

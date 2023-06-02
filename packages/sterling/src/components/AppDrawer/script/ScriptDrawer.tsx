@@ -12,12 +12,17 @@ import {
   VariablesDrawer,
   VariablesDrawerHeader
 } from './variables/VariablesDrawer';
+import {
+  ExplorerDrawer,
+  ExplorerDrawerHeader
+} from '../common/explorer/ExplorerDrawer';
 
 const ScriptDrawer = () => {
   const datum = useSterlingSelector(selectActiveDatum);
   const drawer = useSterlingSelector(selectScriptDrawer);
   return (
     <>
+      {drawer === 'explorer' && <ExplorerDrawer />} 
       {drawer === 'evaluator' && <EvaluatorDrawer />}
       {drawer === 'log' && <LogDrawer />}
       {drawer === 'variables' && datum && <VariablesDrawer datum={datum} />}
@@ -29,6 +34,7 @@ const ScriptDrawerHeader = () => {
   const drawer = useSterlingSelector(selectScriptDrawer);
   return (
     <>
+      {drawer === 'explorer' && <ExplorerDrawerHeader />}
       {drawer === 'evaluator' && <EvaluatorDrawerHeader />}
       {drawer === 'log' && <LogDrawerHeader />}
       {drawer === 'variables' && <VariablesDrawerHeader />}

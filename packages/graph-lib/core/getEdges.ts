@@ -1,6 +1,6 @@
 import { getEdge } from './getEdge';
 import { Edge, Graph, Node } from '../types';
-import { values } from 'lodash';
+import { values } from 'lodash-es';
 
 export function getEdges<N extends Node, E extends Edge>(
   graph: Graph<N, E>

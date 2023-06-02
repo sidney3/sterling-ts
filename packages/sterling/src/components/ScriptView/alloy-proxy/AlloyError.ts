@@ -1,9 +1,8 @@
 class AlloyError {
 
-    static error (source: string, message: string): Error {
-
+    static error (source: string, message: string, printConsoleTrace?: boolean): Error {
+        if(printConsoleTrace) console.trace();
         return Error(`[${source}] ${message}`);
-
     }
 
     static missingAttribute (source: string, attribute: string): Error {

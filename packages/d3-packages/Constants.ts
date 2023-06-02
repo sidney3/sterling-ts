@@ -1,15 +1,21 @@
 
 export const DEFAULT_COLOR: string = "rgb(255, 255, 255)"; // Default to white
-export const DEFAULT_STROKE_WIDTH: number = 1;
+export const DEFAULT_STROKE_WIDTH: number = 2;
 export const DEFAULT_BORDER_COLOR: string = "rgb(0, 0, 0)"; // Default to black background
+
+/**
+ * Textbox font weight [100-1000]; defaults to CSS 'normal' value of 400
+ */
+export const DEFAULT_FONT_WEIGHT: number = 400;
 
 export const DEFAULT_FONT_SIZE: number = 15;
 export const DEFAULT_TEXT_COLOR: string = "rgb(0, 0, 0)"
 
 export const DEFAULT_LINE_COLOR: string = "rgb(0, 0, 0)"
 
-export const SCREEN_WIDTH: number = 490
-export const SCREEN_HEIGHT:number = 700 //these can be adjusted - the settings that I saw on my machine
+//these can be adjusted - the settings that I saw on my machine
+export const SCREEN_WIDTH: number = 1500
+export const SCREEN_HEIGHT:number = 1500 
 
 /**
  * GRAPH RELATED CONSTANTS
@@ -24,3 +30,12 @@ export const NODE_OFFSET:number = 20;
 
 export const DEFAULT_TREE_LINE_COLOR: string = "black"
 export const DEFAULT_TREE_LINE_WIDTH: number = 2
+
+
+/**
+ * 
+ * Edge related constants
+ * 
+ */
+
+export const EDGE_PRECISION:number = 30;

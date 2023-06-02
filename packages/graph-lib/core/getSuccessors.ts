@@ -1,5 +1,5 @@
 import { Edge, Graph, Node } from '../types';
-import { compact, keys } from 'lodash';
+import { compact, keys } from 'lodash-es';
 import { getNode } from './getNode';
 
 export function getSuccessors<N extends Node, E extends Edge>(

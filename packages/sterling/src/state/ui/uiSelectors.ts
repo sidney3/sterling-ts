@@ -1,6 +1,6 @@
 import { DatumParsed } from '@/sterling-connection';
 import { createSelector } from '@reduxjs/toolkit';
-import { get } from 'lodash';
+import { get } from 'lodash-es';
 import {
   GraphDrawerView,
   MainView,

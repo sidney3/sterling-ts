@@ -23,12 +23,13 @@ class d3LibDefCompiler{
         "ConjoinedObject",
         "Polygon",
         "Graph",
+        "Utility",
         "Tree"
     );
     List<String> allFiles = new ArrayList<>(List.of("export const D3_TOTAL_DEFS: string = `"));
     for (String title: titles){
       List<String> file = new ArrayList<String>();
-      String fileName = "../d3lib-defs/" + title + ".d.ts";
+      String fileName = "../d3-defs/" + title + ".d.ts";
       BufferedReader fileReader = new BufferedReader(new FileReader(fileName));
       String newLine = fileReader.readLine();
       while (newLine != null){
@@ -49,7 +50,7 @@ class d3LibDefCompiler{
     }
     allFiles.add("`");
     BufferedWriter fileWriter = new BufferedWriter(
-        new FileWriter("../d3lib-defs/total-defs.ts"));
+        new FileWriter("../d3-defs/total-defs.ts"));
     for (String line: allFiles) {
       fileWriter.newLine();
       fileWriter.write(line);

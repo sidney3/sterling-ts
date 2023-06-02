@@ -1,4 +1,4 @@
-import { Vector2 } from '@graph-ts/vector2';
+import { Vector2 } from 'vector2';
 
 /**
  * A line segment defined by two end points.

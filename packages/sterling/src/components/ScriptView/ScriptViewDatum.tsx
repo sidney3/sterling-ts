@@ -104,16 +104,16 @@ const ScriptViewDatum = (props: ScriptViewDatumProps) => {
             ...datumVariables.map((v) => v.variable),
             ...libraries
           );
-        } catch (e) {
-          toast({
-            variant: 'top-accent',
-            position: 'bottom-right',
-            title: e instanceof Error ? e.name : 'Error',
-            description: e instanceof Error ? e.message : `${e}`,
-            status: 'error',
-            duration: 10000,
-            isClosable: true
-          });
+        } catch (e) {                                  
+            toast({
+              variant: 'top-accent',
+              position: 'bottom-right',
+              title: e instanceof Error ? e.name : 'Error',
+              description: buildErrorDescription(e),
+              status: 'error',
+              duration: 10000,
+              isClosable: true
+            })            
         }
       });
     }
@@ -135,11 +135,11 @@ const ScriptViewDatum = (props: ScriptViewDatumProps) => {
                 provided that the SVG height/width styling is changed directly by the script. 
                 The slightly off-white background color shows the actual full SVG area.*/}
             {stage === 'svg' && 
-              <div id='svg-container' style={{height: '100%', width: '100%', overflow: 'scroll'}}>
+              <div aria-label='SVG Visualization' id='svg-container' style={{height: '100%', width: '100%', overflow: 'scroll'}}>
                 <svg ref={svgRef} style={{width:'100%', height:'100%', backgroundColor: 'snow'}}/>
               </div>}
           </Pane>
-          <Pane className='relative'>
+          <Pane className='relative' aria-label='Visualization Script' data-testid='script-editor-pane'>
             <ScriptEditor
               initialText={initialText}
               variables={datumVariables}
@@ -155,4 +155,33 @@ const ScriptViewDatum = (props: ScriptViewDatumProps) => {
   );
 };
 
+/**
+ * Line numbers are being reported slightly off by the browser
+ */
+const LINE_OFFSET = 2
+
+function buildErrorDescription(e: any): string {
+  // If it's not an Error class, use the value itself, converted to a string
+  if(!(e instanceof Error)) return `${e}`
+
+  console.log(`Error stack: ${e.stack}`)
+
+  // Is there a lineNumber field?
+  if('lineNumber' in e && typeof(e.lineNumber) === 'number') {
+    return `${e.message} near line ${e.lineNumber - LINE_OFFSET} (obtained via lineNumber field)`
+  }
+
+  // Otherwise, try to extract the error's line number from the stack 
+  // Firefox (Function:x:y) / Chrome (<anonymous>:x:y) patterns
+  if (e.stack != undefined && e.stack.match(new RegExp('.*(Function|<anonymous>):[0-9]+:[0-9]+.*'))) {
+    let stackArray = e.stack.split(":")
+    if(stackArray.length >= 4)
+      return `${e.message} near line ${+stackArray[3] - LINE_OFFSET} (computed via stack)`
+  } 
+  
+  // Default to the error message by itself (Safari, as of Jan 2023; some syntax errors also)
+  return `${e.message} (location information was not provided by the browser)`
+}
+
 export { ScriptViewDatum };
+

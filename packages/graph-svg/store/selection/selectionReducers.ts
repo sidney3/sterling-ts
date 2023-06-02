@@ -1,6 +1,6 @@
-import { Vector2 } from '@graph-ts/vector2';
+import { Vector2 } from 'vector2';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { Edge, getEdge, getNode, Graph, PositionedNode } from '@graph-ts/graph-lib';
+import { Edge, getEdge, getNode, Graph, PositionedNode } from '@/graph-lib';
 import { SelectionState, SelectionUpdate } from './selection';
 
 /**

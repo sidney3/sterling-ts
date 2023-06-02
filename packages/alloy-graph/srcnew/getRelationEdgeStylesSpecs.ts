@@ -1,5 +1,5 @@
 import { EdgeStyleSpec, SterlingTheme } from '@/sterling-theme';
-import { flatten } from 'lodash';
+import { flatten } from 'lodash-es';
 
 /**
  * Get an ordered array of edge style specs for the given relation. Only

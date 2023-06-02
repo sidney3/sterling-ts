@@ -32,6 +32,8 @@ const FIELD_URL =
   'https://alloy-js.github.io/alloy-ts/classes/alloyfield.alloyfield-1.html';
 const SKOLEM_URL =
   'https://alloy-js.github.io/alloy-ts/classes/alloyskolem.alloyskolem-1.html';
+const D3_HELPER_URL =
+  'https://csci1710.github.io/forge-documentation/sterling/d3fx.html';
 
 function selectScriptVariables(
   datum: DatumParsed<any>,
@@ -91,7 +93,8 @@ function selectScriptVariables(
     const visStates: ScriptVariable[] = scriptViewImports.map((visState) => ({
       name: visState.name,
       variable: visState.value,
-      type: ``
+      type: `D3Helper`,
+      typeUrl: D3_HELPER_URL,
     }));
 
     const scriptVariables: ScriptVariable[] = [

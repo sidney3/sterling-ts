@@ -1,5 +1,5 @@
 import { Box, useStyleConfig } from '@chakra-ui/react';
-import { clamp, throttle } from 'lodash';
+import { clamp, throttle } from 'lodash-es';
 import {
   Children,
   CSSProperties,
@@ -15,10 +15,6 @@ import { HANDLE_PAD } from './constants';
 import { DragHandle } from './DragHandle';
 
 interface DashboardProps {
-  leftPaneCollapsed: boolean;
-  leftPaneInitialWidth: number;
-  leftPaneMinWidth: number;
-  leftPaneMaxWidth: number;
   rightPaneCollapsed: boolean;
   rightPaneInitialWidth: number;
   rightPaneMinWidth: number;
@@ -28,10 +24,6 @@ interface DashboardProps {
 const Dashboard = (props: PropsWithChildren<DashboardProps>) => {
   const {
     children,
-    leftPaneCollapsed,
-    leftPaneInitialWidth,
-    leftPaneMinWidth,
-    leftPaneMaxWidth,
     rightPaneCollapsed,
     rightPaneInitialWidth,
     rightPaneMinWidth,
@@ -41,21 +33,10 @@ const Dashboard = (props: PropsWithChildren<DashboardProps>) => {
   const ref = useRef<HTMLDivElement | null>(null);
   const styles = useStyleConfig('Dashboard');
 
-  const [leftClickOffset, setLeftClickOffset] = useState<number>(0);
-  const [leftDragging, setLeftDragging] = useState<boolean>(false);
-  const [leftWidth, setLeftWidth] = useState<number>(leftPaneInitialWidth);
   const [rightClickOffset, setRightClickOffset] = useState<number>(0);
   const [rightDragging, setRightDragging] = useState<boolean>(false);
   const [rightWidth, setRightWidth] = useState<number>(rightPaneInitialWidth);
 
-  const leftL = useMemo(
-    () => (leftPaneCollapsed ? -leftWidth : 0),
-    [leftPaneCollapsed, leftWidth]
-  );
-  const middleL = useMemo(
-    () => (leftPaneCollapsed ? 0 : leftWidth),
-    [leftPaneCollapsed, leftWidth]
-  );
   const middleR = useMemo(
     () => (rightPaneCollapsed ? 0 : rightWidth),
     [rightPaneCollapsed, rightWidth]
@@ -65,22 +46,16 @@ const Dashboard = (props: PropsWithChildren<DashboardProps>) => {
     [rightPaneCollapsed, rightWidth]
   );
 
-  const leftStyle = useMemo<CSSProperties>(
-    () => style(leftWidth, leftL, undefined, leftDragging),
-    [leftWidth, leftL, leftDragging]
-  );
   const middleStyle = useMemo<CSSProperties>(
-    () => style(undefined, middleL, middleR, leftDragging || rightDragging),
-    [middleL, middleR, leftDragging, rightDragging]
+    () => style(undefined, 0, middleR, false || rightDragging),
+    [0, middleR, false, rightDragging]
   );
+
   const rightStyle = useMemo<CSSProperties>(
     () => style(rightWidth, undefined, rightR, rightDragging),
     [rightWidth, rightR, rightDragging]
   );
-  const leftHandleStyle = useMemo<CSSProperties>(
-    () => style(undefined, leftL + leftWidth, undefined, leftDragging),
-    [leftL, leftWidth, leftDragging]
-  );
+
   const rightHandleStyle = useMemo<CSSProperties>(
     () => style(undefined, undefined, rightR + rightWidth, rightDragging),
     [rightR, rightWidth, rightDragging]
@@ -91,26 +66,17 @@ const Dashboard = (props: PropsWithChildren<DashboardProps>) => {
       const rect = event.target.getBoundingClientRect();
       const offset = event.clientX - rect.left;
       switch (side) {
-        case 'left':
-          setLeftClickOffset(offset);
-          setLeftDragging(true);
-          break;
         case 'right':
           setRightClickOffset(offset);
           setRightDragging(true);
           break;
       }
     },
-    [setLeftDragging, setRightDragging]
+    [setRightDragging]
   );
 
   const onMouseMove = useCallback(
     throttle((event) => {
-      if (leftDragging) {
-        window.getSelection()?.empty();
-        const w = event.clientX - leftClickOffset + HANDLE_PAD;
-        setLeftWidth(clamp(w, leftPaneMinWidth, leftPaneMaxWidth));
-      }
       if (rightDragging) {
         const current = ref.current;
         if (current) {
@@ -122,21 +88,16 @@ const Dashboard = (props: PropsWithChildren<DashboardProps>) => {
       }
     }, 16),
     [
-      leftClickOffset,
       rightClickOffset,
-      leftDragging,
       rightDragging,
-      leftPaneMinWidth,
       rightPaneMinWidth,
-      leftPaneMaxWidth,
       rightPaneMaxWidth
     ]
   );
 
   const onMouseUp = useCallback(() => {
-    setLeftDragging(false);
     setRightDragging(false);
-  }, [setLeftDragging, setRightDragging]);
+  }, [setRightDragging]);
 
   useEffect(() => {
     document.addEventListener('mousemove', onMouseMove);
@@ -149,17 +110,11 @@ const Dashboard = (props: PropsWithChildren<DashboardProps>) => {
 
   const definedChildren = Children.toArray(children).filter((c) => c);
 
-  return definedChildren.length === 3 ? (
+  return definedChildren.length === 2 ? ( //3
     <Box ref={ref} __css={styles}>
-      <div style={leftStyle}>{definedChildren[0]}</div>
-      <div style={middleStyle}>{definedChildren[1]}</div>
-      <div style={rightStyle}>{definedChildren[2]}</div>
-      <div
-        style={leftHandleStyle}
-        onMouseDown={(event) => onMouseDown('left', event)}
-      >
-        <DragHandle />
-      </div>
+      <div style={middleStyle}>{definedChildren[0]}</div>
+      <div style={rightStyle}>{definedChildren[1]}</div>
+      
       <div
         style={rightHandleStyle}
         onMouseDown={(event) => onMouseDown('right', event)}

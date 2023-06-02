@@ -1,7 +1,7 @@
 import { getEdges, getNodes, Graph } from '@/graph-lib';
 import { Vector2 } from '@/vector2';
 import dagre from 'dagre';
-import { forEach, isUndefined, max, min } from 'lodash';
+import { forEach, isUndefined, max, min } from 'lodash-es';
 import { GraphLayout, GraphLayoutSettings } from './types';
 
 /**

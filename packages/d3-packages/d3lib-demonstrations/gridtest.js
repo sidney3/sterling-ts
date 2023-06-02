@@ -20,12 +20,13 @@ const bigGrid = new Grid(bigGridConfig)
 
 for(let i = 0; i < 3; i++){
     for(let j =0; j<3; j++){
-        const newRect = new Rectangle(140,140);
+      if(j != 1 & i != 1){
+        const newRect = new Rectangle({height: 140, width: 140});
         bigGrid.add({x:i,y:j}, newRect)
+      }
     }
 }
 
-bigGrid.remove({x:1,y:1})
 const smallGridConfig = {
     grid_location :{
         x:0,
@@ -43,12 +44,14 @@ const smallGridConfig = {
 const smallGrid = new Grid(smallGridConfig)
 for(let i = 0; i < 3; i++){
     for(let j =0; j<3; j++){
-        const newRect = new Rectangle(40,40);
+      if(i != 1 & j!= 1){
+        const newRect = new Rectangle({height: 40,width: 40});
         smallGrid.add({x:i,y:j}, newRect)
+      }
+        
     }
 }
 
-smallGrid.remove({x:1,y:1})
 
 const smallerGridConfig = {
     grid_location :{
@@ -68,7 +71,7 @@ const smallerGridConfig = {
 const smallerGrid = new Grid(smallerGridConfig)
 for(let i = 0; i < 3; i++){
     for(let j =0; j<3; j++){
-        const newRect = new Rectangle(9,9);
+        const newRect = new Rectangle({height: 9, width: 9});
         smallerGrid.add({x:i,y:j}, newRect)
     }
 }

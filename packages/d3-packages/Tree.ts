@@ -1,11 +1,10 @@
-import { max } from 'lodash';
 import { Circle } from './Circle';
-import {Graph, Node} from './Graph'
-import {VisualObject, Coords} from './VisualObject'
-import {TextBox} from './TextBox'
+import {VisualObject} from './VisualObject'
+import {Coords, toFunc} from "./Utility"
+import {TextBox} from './Textbox'
 import {Line} from "./Line"
 import { Children } from 'react';
-import { DEFAULT_TREE_LINE_COLOR, DEFAULT_TREE_LINE_WIDTH } from './Constants';
+import { DEFAULT_LINE_COLOR, DEFAULT_STROKE_WIDTH, DEFAULT_TREE_LINE_COLOR, DEFAULT_TREE_LINE_WIDTH } from './Constants';
 
 /**
  * Interface for node in a tree with a visualObject
@@ -15,13 +14,22 @@ export interface VisTree{
     children: VisTree[]
 }
 
+export interface TreeProps {
+    root: VisTree, 
+    height: number, 
+    width: number, 
+    coords?: Coords | (() => Coords), 
+    edgeColor?: string, 
+    edgeWidth?: number
+}
+
 export class Tree extends VisualObject{
-    
     root: VisTree;
     height: number;
     width: number
     private lines: Line[];
     private subTrees: Tree[]
+    private coords: () => Coords
     
     /**
      * Builds a tree object, pulling all children nodes into proper locations and
@@ -31,26 +39,47 @@ export class Tree extends VisualObject{
      * @param width width of box to bound the tree
      * @param coords top left point of the tree
      */
-    constructor(
-        root: VisTree, height: number, width: number, coords?: Coords, edgeColor?: string, edgeWidth?: number
-        ){
-        super(coords)
-        this.height = height;
-        this.width = width;
-        this.root = root;
-        this.root.visualObject.setCenter({
-            x: this.coords.x + this.width / 2,
-            y: this.coords.y
-        })
-        console.log(this)
+    constructor(props: TreeProps){
+        super(props.coords)
+        let coordsFunc = toFunc({x:0, y:0}, props.coords)
+        this.center = () => {
+            return {
+                x: coordsFunc().x + this.width / 2,
+                y: coordsFunc().y + this.height / 2
+            }
+        }
+        // Coords is essentially a helper function because it's easier to deal with. It needs
+        // to be defined in terms of the center for use within the system, however, as that's
+        // What's going to be edited to move the grid. 
+        this.coords = () => {
+            return {
+                x: this.center().x - this.width / 2,
+                y: this.center().y - this.height / 2
+            }
+        }
+
+        this.height = props.height;
+        this.width = props.width;
+        this.root = props.root;
+        
+        let oldCenterFunc: () => Coords = this.root.visualObject.center
+        this.root.visualObject.setCenter(() => { return {
+            x: this.coords().x + this.width / 2 + oldCenterFunc().x,
+            y: this.coords().y + oldCenterFunc().y
+        }})
+
+        this.lines = []
+        this.subTrees = []
+
         this.setUpSubtrees();
-        this.setLineColor(edgeColor ?? DEFAULT_TREE_LINE_COLOR);
-        this.setLineWidth(edgeWidth ?? DEFAULT_TREE_LINE_WIDTH)
+        this.setLineColor(props.edgeColor ?? DEFAULT_TREE_LINE_COLOR);
+        this.setLineWidth(props.edgeWidth ?? DEFAULT_TREE_LINE_WIDTH)
     }
 
-    private setUpSubtrees(){
+    private setUpSubtrees(){ // There's a lot of math happening here, 
+        // Need to more reliably comment details of it
         let layerHeight: number = this.height/(treeHeight(this.root) - 1)
-        console.log(layerHeight)
+        // console.log(layerHeight)
 
         let totalWidth: number = this.root.children
             .map((childTree): number => treeWidth(childTree))
@@ -64,45 +93,34 @@ export class Tree extends VisualObject{
             let prevWidth: number = currTotalWidth
             currTotalWidth += childWidth
 
-            return new Tree(
-                childTree, 
-                layerHeight * (treeHeight(childTree) - 1),
-                this.width * treeWidth(childTree) / totalWidth,
-                {
-                    x: this.coords.x + (prevWidth / totalWidth) * this.width,
-                    y: this.coords.y + layerHeight
-                }
-                )
+            return new Tree({
+                root: childTree, 
+                height: layerHeight * (treeHeight(childTree) - 1),
+                width: this.width * treeWidth(childTree) / totalWidth,
+                coords: () => { return {
+                    x: this.coords().x + (prevWidth / totalWidth) * this.width,
+                    y: this.coords().y + layerHeight
+                }} // Might need to set line color? Needs testing. 
+            })
         })
-
-        this.lines = []
 
         this.subTrees.forEach((subTree) => {
-            this.lines.push(new Line(
-                [{
+            this.lines.push(new Line({
+                points: [() => { return {
                     x: this.root.visualObject.center().x,
                     y: this.root.visualObject.center().y
-                },
-                {
+                }},
+                () => { return {
                     x: subTree.root.visualObject.center().x,
                     y: subTree.root.visualObject.center().y
-                }],
-                "black",
-                2 // Need to make default later
-            ))
+                }}],
+                color: DEFAULT_LINE_COLOR,
+                width: DEFAULT_STROKE_WIDTH // Need to make default later
+            }))
         })
-    }
-
-    setCenter(center: Coords){
-        this.coords = {
-            x: center.x - this.width/2,
-            y: center.y - this.height/2
-        }
-        this.root.visualObject.setCenter({
-            x: this.coords.x + this.width / 2,
-            y: this.coords.y
-        })
-        this.setUpSubtrees()
+        this.lines.forEach((line) => { this.children.push(line) })
+        this.subTrees.forEach((subTree) => { this.children.push(subTree) })
+        this.children.push(this.root.visualObject)
     }
 
     setLineColor(color: string){
@@ -112,21 +130,6 @@ export class Tree extends VisualObject{
     setLineWidth(width: number){
         this.lines.forEach((line) => line.setWidth(width))
         this.subTrees.forEach(subTree => subTree.setLineWidth(width))
-    }
-
-    renderNodes(svg){
-        this.root.visualObject.render(svg)
-        this.subTrees.forEach((subTree: Tree) => subTree.renderNodes(svg))
-    } // Need to separate line rendering and node rendering because lines need to be done after. 
-
-    renderLines(svg) {
-        this.lines.forEach((line) => line.render(svg))
-        this.subTrees.forEach((subTree) => subTree.renderLines(svg))
-    }
-
-    render(svg: any): void {
-        this.renderLines(svg)
-        this.renderNodes(svg)
     }
 }
 

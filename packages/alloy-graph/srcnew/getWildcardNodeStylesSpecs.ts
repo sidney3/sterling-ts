@@ -1,5 +1,5 @@
 import { NodeStyleSpec, SterlingTheme } from '@/sterling-theme';
-import { flatten } from 'lodash';
+import { flatten } from 'lodash-es';
 
 /**
  * Get all wildcard node style specs from a set of themes.

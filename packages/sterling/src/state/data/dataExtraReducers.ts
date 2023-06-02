@@ -1,6 +1,6 @@
 import { DataJoinParsed } from '@/sterling-connection';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { assign, eachRight, forEach, indexOf, last, merge } from 'lodash';
+import { assign, eachRight, forEach, indexOf, last, merge } from 'lodash-es';
 import { DataState } from './data';
 
 /**

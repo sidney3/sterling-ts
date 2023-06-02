@@ -2,7 +2,7 @@ import { AlloyEdge, AlloyGraph, AlloyNode } from '@/alloy-graph';
 import { AlloyDatum } from '@/alloy-instance';
 import { newGraph } from '@/graph-lib';
 import { SterlingThemeOld } from '@/sterling-theme';
-import _ from 'lodash';
+import _ from 'lodash-es';
 import {
   AtomNode,
   getVisibleGraphComponents

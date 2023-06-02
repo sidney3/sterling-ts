@@ -1,10 +1,11 @@
-import { GraphSVGDivProps, ShapeDef } from '@graph-ts/graph-svg';
+//import { GraphSVGDivProps, ShapeDef } from '@graph-ts/graph-svg';
+import { GraphSVGDivProps, ShapeDef } from '@/graph-svg';
 import { CSSProperties, SVGProps } from 'react';
 
-export type StyleSet = Pick<
-  GraphSVGDivProps,
-  'nodeLabels' | 'nodeStyles' | 'nodeShapes' | 'edgeLabels' | 'edgeStyles'
->;
+// export type StyleSet = Pick<
+//   GraphSVGDivProps,
+//   'nodeLabels' | 'nodeStyles' | 'nodeShapes' | 'edgeLabels' | 'edgeStyles'
+// >;
 
 export interface SterlingThemeOld {
   sterling: 'v0';

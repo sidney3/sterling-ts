@@ -9,7 +9,6 @@ import { AppSideBar } from './AppSideBar/AppSideBar';
 import { AppStage } from './AppStage/AppStage';
 import { AppStatusBar } from './AppStatusBar/AppStatusBar';
 import { defaultPreferences } from '../preferences';
-import { DataExplorer } from './DataExplorer/DataExplorer';
 
 interface SterlingProps {
   url?: string;
@@ -31,16 +30,11 @@ const Sterling = (props: SterlingProps) => {
   return (
     <>
       <Dashboard
-        leftPaneCollapsed={false}
-        leftPaneInitialWidth={layout.explorerWidth}
-        leftPaneMinWidth={layout.explorerMinWidth}
-        leftPaneMaxWidth={layout.explorerMaxWidth}
         rightPaneCollapsed={drawerCollapsed}
         rightPaneInitialWidth={layout.drawerWidth}
         rightPaneMinWidth={layout.drawerMinWidth}
         rightPaneMaxWidth={layout.drawerMaxWidth}
       >
-        <DataExplorer />
         <AppStage />
         <AppDrawer />
       </Dashboard>

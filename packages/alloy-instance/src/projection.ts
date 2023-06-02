@@ -1,4 +1,4 @@
-import { isUndefined, uniq } from 'lodash';
+import { isUndefined, uniq } from 'lodash-es';
 import { getAtomType } from './atom';
 import { AlloyInstance, getInstanceTypes } from './instance';
 import { AlloyRelation } from './relation';

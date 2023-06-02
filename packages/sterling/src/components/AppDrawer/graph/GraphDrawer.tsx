@@ -10,6 +10,10 @@ import {
   GraphStateDrawerHeader
 } from './state/GraphStateDrawer';
 import {
+  ExplorerDrawer,
+  ExplorerDrawerHeader
+} from '../common/explorer/ExplorerDrawer';
+import {
   GraphThemeDrawer,
   GraphThemeDrawerHeader
 } from './theme/GraphThemeDrawer';
@@ -18,6 +22,7 @@ const GraphDrawer = () => {
   const drawer = useSterlingSelector(selectGraphDrawer);
   return (
     <>
+      {drawer === 'explorer' && <ExplorerDrawer />}
       {drawer === 'state' && <GraphStateDrawer />}
       {drawer === 'theme' && <GraphThemeDrawer />}
       {drawer === 'evaluator' && <EvaluatorDrawer />}
@@ -30,6 +35,7 @@ const GraphDrawerHeader = () => {
   const drawer = useSterlingSelector(selectGraphDrawer);
   return (
     <>
+      {drawer === 'explorer' && <ExplorerDrawerHeader />}
       {drawer === 'state' && <GraphStateDrawerHeader />}
       {drawer === 'theme' && <GraphThemeDrawerHeader />}
       {drawer === 'evaluator' && <EvaluatorDrawerHeader />}

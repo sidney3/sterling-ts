@@ -19,7 +19,7 @@ import {
   NodeStyleSpec,
   SterlingTheme
 } from '@/sterling-theme';
-import { assign } from 'lodash';
+import { assign } from 'lodash-es';
 import { CSSProperties } from 'react';
 import { getInstanceEdgeStyleSpecs } from './getInstanceEdgeStyleSpecs';
 import { getInstanceNodeStyleSpecs } from './getInstanceNodeStyleSpecs';

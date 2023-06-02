@@ -9,7 +9,7 @@ import {
 import { newGraph } from '@/graph-lib';
 import { getRelationIsAttribute, SterlingTheme } from '@/sterling-theme';
 import { WritableDraft } from 'immer/dist/types/types-external';
-import { first, last } from 'lodash';
+import { first, last } from 'lodash-es';
 import { generateEdgeId, generateNodeId } from './ids';
 import { AlloyEdge, AlloyGraph, AlloyNode } from './types';
 

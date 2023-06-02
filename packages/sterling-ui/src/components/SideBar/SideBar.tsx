@@ -3,7 +3,7 @@ import sizes from '../../sizes';
 
 const SideBar = (props: FlexProps) => {
   const styles = useStyleConfig('SideBar');
-  return <Flex __css={styles} {...props} />;
+  return <Flex __css={{...styles, overflowY: 'auto'}} {...props} />;
 };
 
 const SideBarTheme = {

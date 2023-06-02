@@ -16,7 +16,7 @@ const useSpreadHandler = (
   callback: (matrix: Matrix) => void
 ) =>
   useCallback(
-    (event: WheelEvent) => {
+    (event: WheelEvent) => {      
       if (event.deltaX === 0) return;
       const sf =
         event.deltaX < 0 ? SPREAD_SCALE_FACTOR : 1 / SPREAD_SCALE_FACTOR;

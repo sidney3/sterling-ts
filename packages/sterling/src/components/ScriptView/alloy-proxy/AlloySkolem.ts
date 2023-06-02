@@ -9,7 +9,7 @@ class AlloySkolem extends AlloyTypedSet {
 
     private readonly _id: string;
 
-    constructor (id: string, types: AlloySignature[], tuples: AlloyTuple[], proxy?: AlloyProxy) {
+    constructor (id: string, types: AlloySignature[][], tuples: AlloyTuple[], proxy?: AlloyProxy) {
 
         super(types, tuples);
         this._id = id;
@@ -22,19 +22,20 @@ class AlloySkolem extends AlloyTypedSet {
 
     clone (signatures: AlloySignature[], proxy?: AlloyProxy): AlloySkolem {
 
-        const types = this.types().map(type => signatures.find(sig => sig.id() === type.id()));
-        if (!types.every(isDefined))
-            throw AlloyError.error('AlloySkolem', 'Missing type, cannot clone field');
+        // const types = this.types().map(type => signatures.find(sig => sig.id() === type.id()));
+        // if (!types.every(isDefined))
+        //     throw AlloyError.error('AlloySkolem', 'Missing type, cannot clone field');
 
         const tuples = this.tuples().map(tuple => {
             return new AlloyTuple(tuple.atoms().map((atom, index) => {
-                const clonedAtom = types[index]!.atom(atom.id());
-                if (!clonedAtom) throw AlloyError.error('AlloySkolem', 'Missing atom, cannot clone field');
-                return clonedAtom;
+                return atom.clone()
+                // const clonedAtom = types[index]!.atom(atom.id());
+                // if (!clonedAtom) throw AlloyError.error('AlloySkolem', 'Missing atom, cannot clone field');
+                // return clonedAtom;
             }));
         });
 
-        return new AlloySkolem(this.id(), types as AlloySignature[], tuples, proxy);
+        return new AlloySkolem(this.id(), this.types(), tuples, proxy);
 
     }
 

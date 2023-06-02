@@ -1,4 +1,4 @@
-import produce from 'immer';
+import { produce } from 'immer';
 import { Edge, Graph, Node } from '../types';
 import { getNode } from './getNode';
 import { _removeNode } from './producers/_removeNode';

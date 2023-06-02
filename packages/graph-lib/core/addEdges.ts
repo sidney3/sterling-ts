@@ -1,4 +1,4 @@
-import produce, { castDraft } from 'immer';
+import { produce, castDraft } from 'immer';
 import { _addEdge } from './producers/_addEdge';
 import { Edge, Graph, Node } from '../types';
 

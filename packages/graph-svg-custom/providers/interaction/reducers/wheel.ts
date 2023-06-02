@@ -34,7 +34,7 @@ function handleWheel(
   const event = action.event;
   const sf = getScaleFactor(event);
 
-  if (svg && sf !== 0) {
+  if (svg && sf !== 0 && !event.ctrlKey) {
     return event.shiftKey
       ? handleSpread(state, event, sf, svg)
       : handleZoom(state, event, sf, svg);

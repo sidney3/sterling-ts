@@ -12,12 +12,13 @@ class AlloyField extends AlloyTypedSet {
     /**
      * Create a new Alloy field.
      * @param id The field's unique ID
-     * @param types An array of signatures defining the types of each column of the field
+     * @param types An array of arrays of signatures defining the possible types of each column of the field
+     *              (An Alloy type is a _union_ of possible vectors of sig names.)
      * @param tuples The tuples defined by the field
      * @param proxy If provided, a proxied signature will be created.
      * @param varName If provided, the variable name to assign to this field when proxied.
      */
-    constructor (id: string, types: AlloySignature[], tuples: AlloyTuple[], proxy?: AlloyProxy, varName?: string) {
+    constructor (id: string, types: AlloySignature[][], tuples: AlloyTuple[], proxy?: AlloyProxy, varName?: string) {
 
         super(types, tuples);
         this._id = id;
@@ -39,28 +40,32 @@ class AlloyField extends AlloyTypedSet {
      * @param proxy If provided, a proxied clone will be returned.
      */
     clone (signatures: AlloySignature[], proxy?: AlloyProxy): AlloyField {
-
-        const types = this.types().map(type => signatures.find(sig => sig.id() === type.id()));
-        if (!types.every(isDefined))
-            throw AlloyError.error('AlloyField', 'Missing type, cannot clone field');
+        
+        // TODO: types should already be populated and contain these sigs?
+        // const types = this.types().map(
+        //     possibleType => possibleType.map(type => signatures.find(sig => sig.id() === type.id())));
+        this.types().forEach(possibleType => {
+            if (!this.types().every(isDefined))
+                throw AlloyError.error('AlloyField', 'Missing type, cannot clone field')});
 
         const tuples = this.tuples().map(tuple => {
             return new AlloyTuple(tuple.atoms().map((atom, index) => {
-                const clonedAtom = types[index]!.atom(atom.id());
-                if (!clonedAtom) throw AlloyError.error('AlloyField', 'Missing atom, cannot clone field');
-                return clonedAtom;
+                // const clonedAtom = types[index]!.atom(atom.id());
+                // if (!clonedAtom) throw AlloyError.error('AlloyField', 'Missing atom, cannot clone field');
+                // return clonedAtom;
+                return atom.clone()
             }));
         });
 
         if (proxy) {
-
+            
             const varName = Reflect.get(this, '__var__');
             if (!varName) throw AlloyError.error('AlloyField', 'Cannot use proxy to clone non-proxied field');
-            return new AlloyField(this.id(), types as AlloySignature[], tuples, proxy, varName);
+            return new AlloyField(this.id(), this.types(), tuples, proxy, varName.toString());
 
         }
 
-        return new AlloyField(this.id(), types as AlloySignature[], tuples);
+        return new AlloyField(this.id(), this.types(), tuples);
 
     }
 
@@ -96,7 +101,9 @@ class AlloyField extends AlloyTypedSet {
 
             const label = fieldElement.getAttribute('label');
             const parentID = fieldElement.getAttribute('parentID');
-            const types = AlloySignature.typesFromXML(fieldElement, sigIDs);
+            
+            // Array-of-arrays: in case there are multiple types (e.g., a field declared using union)
+            const allTypes: AlloySignature[][] = AlloySignature.typesFromXML(fieldElement, sigIDs);
 
             if (!label) throw AlloyError.missingAttribute('AlloyField', 'label');
             if (!parentID) throw AlloyError.missingAttribute('AlloyField', 'parentID');
@@ -109,10 +116,11 @@ class AlloyField extends AlloyTypedSet {
             const varname = count > 1
                 ? multiFieldName(label, parent)
                 : label;
+                
+            
+            const tuples = AlloyTuple.tuplesFromXML(fieldElement.querySelectorAll('tuple'), allTypes);
 
-            const tuples = AlloyTuple.tuplesFromXML(fieldElement.querySelectorAll('tuple'), types);
-
-            return new AlloyField(label, types, tuples, proxy, varname);
+            return new AlloyField(label, allTypes, tuples, proxy, varname);
 
         });
 

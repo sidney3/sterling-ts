@@ -23,7 +23,7 @@ import { GraphProps } from '@/graph-svg';
 import { DatumParsed, isDatumAlloy } from '@/sterling-connection';
 import { Projection, SterlingTheme } from '@/sterling-theme';
 import { createSelector } from '@reduxjs/toolkit';
-import { difference, get, keys, pick, set } from 'lodash';
+import { difference, get, keys, pick, set } from 'lodash-es';
 import { Matrix } from 'transformation-matrix';
 import dataSelectors from './data/dataSelectors';
 import { Expression } from './evaluator/evaluator';

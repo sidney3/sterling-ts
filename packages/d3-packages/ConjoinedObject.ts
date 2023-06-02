@@ -1,15 +1,17 @@
-import {VisualObject, Coords} from './VisualObject'
+import {Coords, BoundingBox} from './Utility'
+import {VisualObject} from "./VisualObject"
 
+
+/**
+ * This class is not currently being used!!
+ */
 
 export class ConjoinedObject extends VisualObject{
-    /**
-     * Note: this code is untested!
-     */
 
-    objects:VisualObject[]
+    children:VisualObject[]
     constructor(Children?:VisualObject[]){
         super({x:0,y:0})
-        this.objects = []
+        this.children = []
         if(Children){
             Children.forEach(child => {
                 this.add(child)
@@ -23,11 +25,11 @@ export class ConjoinedObject extends VisualObject{
          * index. If the index is greater than the length of objects +1 an error is thrown
          */
 
-        if(index > this.objects.length){
-            throw `Index larger than current number of objects stored plus 1. Add an index between 0 and ${this.objects.length}`
+        if(index > this.children.length){
+            throw `Index larger than current number of objects stored plus 1. Add an index between 0 and ${this.children.length}`
         }
 
-        this.objects.splice(index, 0, obj);
+        this.children.splice(index, 0, obj);
     }
 
     add(obj:VisualObject){
@@ -41,19 +43,8 @@ export class ConjoinedObject extends VisualObject{
         /**
          * Align all the objects in the conjoined object to a single center
          */
-        this.objects.forEach(obj => {
+        this.children.forEach(obj => {
             obj.setCenter(coords)
         })
-    }
-
-    override render(svg:any){
-        /**
-         * We render each of our objects. Note that this is done in inverse order of the list,
-         * as the first element in the list should be the frontmost element
-         */
-
-        for(let i = this.objects.length-1; i >= 0; i--){
-            this.objects[i].render(svg)
-        }
     }
 }

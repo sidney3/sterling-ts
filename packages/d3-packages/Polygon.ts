@@ -1,15 +1,17 @@
-import {Shape} from './Shape'
-import { require as d3require } from 'd3-require';
-const d3 = require("d3")
-import {BoundingBox, Coords} from './VisualObject'
-import { averagePath, boundsOfList, shiftList } from './Line';
+import {Shape, ShapeProps} from './Shape'
+import * as d3 from 'd3' 
+import { averagePath, boundsOfList, shiftList, BoundingBox, Coords, toFunc } from './Utility';
+
+export interface PolygonProps extends ShapeProps {
+    points: Coords[] | (() => Coords)[]
+}
 
 /**
  * Class Representing Polygonal objects. Takes the form of any
  * series of points, and will form a polygon with said points as the boundary.
  */
 export class Polygon extends Shape{
-    points: Coords[]
+    pointsRelative: (() => Coords)[]
 
     /**
      * Constructs a polygon object
@@ -21,52 +23,53 @@ export class Polygon extends Shape{
      * @param labelColor color of label text
      * @param labelSize size of the label
      */
-    constructor(
-        points: Coords[],
-        color?: string,
-        borderWidth?: number,
-        borderColor?: string,
-        label?: string,
-        labelColor?: string,
-        labelSize?: number
-    ){
-        super(points[0], color, borderWidth, borderColor, label, labelColor, labelSize)
-        this.points = points
-        this.label.setCenter(this.center())
+    constructor(props: PolygonProps){
+        let pointsUnshifted: (() => Coords)[] = props.points.map(
+            (point): (() => Coords) => toFunc({x: 0, y: 0}, point))
+        
+        props.center = (): Coords => {
+            return averagePath(pointsUnshifted.map((coordFunc) => coordFunc()))
+            }, 
+        
+        super(props)
+        this.pointsRelative = shiftList(pointsUnshifted, this.center)
     }
 
     boundingBox(): BoundingBox {
-        return boundsOfList(this.points)
+        return boundsOfList(this.pointsRelative.map((pointFn) => {return {
+        x: pointFn().x + this.center().x,
+        y: pointFn().y + this.center().y
+        }}));
     }
 
-    // Using averagePath utility to return rough center
-    center(): Coords { return averagePath(this.points) }
-
-    // Shifts points so average is at new center
-    setCenter(center: Coords): void {
-        let shift: Coords = {
-            x: - this.center().x + center.x,
-            y: - this.center().y + center.y
+    render(svg: any, parent_masks: BoundingBox[]){
+        let maskIdentifier: string = '';
+        let render_masks: BoundingBox[];
+        if (parent_masks) {
+          render_masks = this.masks.concat(parent_masks);
+        } else {
+          render_masks = this.masks;
         }
-        this.points = shiftList(this.points, shift)
-        
-        super.setCenter(center)
-    }
-
-    render(svg: any){
-        let path = d3.path()
-        path.moveTo(this.points[0].x, this.points[0].y)
-        this.points.forEach((point: Coords) => {
-            path.lineTo(point.x, point.y)
-            }
-        )
+        let truePoints: Coords[] = this.pointsRelative.map((pointFn): Coords => {return {
+            x: pointFn().x + this.center().x,
+            y: pointFn().y + this.center().y
+          }}
+          )
+          let path = d3.path();
+          path.moveTo(truePoints[0].x, truePoints[0].y);
+          truePoints.forEach((point: Coords) => {
+            path.lineTo(point.x, point.y);
+          });
         path.closePath()
+        maskIdentifier = this.addMaskRender(render_masks, svg);
         d3.select(svg)
             .append('path')
-            .attr('d', path)
+            .attr('d', path.toString)
             .attr('stroke-width', this.borderWidth)
             .attr('stroke', this.borderColor)
-            .attr('fill', this.color) 
-        super.render(svg)
+            .attr('fill', this.color)
+            .attr('mask', (render_masks.length > 0) ? `url(#${maskIdentifier})` : '')
+            .attr('opacity', this.opacity()) 
+        super.render(svg, render_masks)
     }
 }

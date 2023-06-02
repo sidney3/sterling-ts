@@ -4,7 +4,13 @@ import { AlloySet, AlloyTuple } from './AlloySet';
 
 /**
  * In Alloy, an atom is a primitive entity that is indivisible, immutable, and
- * uninterpreted.
+ * uninterpreted. 
+ * 
+ * Note well: AlloyAtoms should _never_ be compared via == or ===; this will use
+ * object equality and thus distinguish between cloned or proxied atoms with the 
+ * same ID. The semantics of Alloy require that atoms are identical up to their ID.
+ * Instead, use AlloySet's .equal() method. (This applies to using JavaScript functions
+ * that use == natively, e.g. checking membership in an array.)
  */
 class AlloyAtom extends AlloySet {
 

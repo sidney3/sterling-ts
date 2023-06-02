@@ -27,17 +27,27 @@ import { projectInstance } from './projectInstances';
 import { AlloyEdge, AlloyGraph, AlloyNode } from './types';
 import dagre from 'dagre';
 
-export function buildGraph(
-  instance: AlloyInstance,
-  theme?: SterlingThemeOld
-): AlloyGraph {
-  // Apply projections
-  instance = projectInstance(instance, theme);
+// export function buildGraph(
+//   instance: AlloyInstance,
+//   theme?: SterlingThemeOld
+// ): AlloyGraph {
+//   // Apply projections
+//   instance = projectInstance(instance, theme);
 
-  // Get the graph components and position the nodes
-  const graphComponents = getVisibleGraphComponents(instance, theme);
-  const nodes = layoutNodes(graphComponents);
-  const edges = graphComponents.edges;
+//   // Get the graph components and position the nodes
+//   const graphComponents = getVisibleGraphComponents(instance, theme);
 
-  return newGraph(nodes, edges);
-}
+//   // TN: danger! We have types from srcnew and src interacting! 
+//   //   This doesn't present a problem in execution, but it does prevent Jest/VSCode...
+//   const nodes: AlloyNode[] = layoutNodes(graphComponents);
+//   const edges: AlloyEdge[] = graphComponents.edges;
+
+//   return newGraph(nodes, edges);
+
+//   // src:
+//   // export type AlloyNode = PositionedNode & { atom: AlloyAtom };
+//   // export type AlloyEdge = RoutedEdge & { relation: string; tuple: AlloyTuple };
+//   // srcnew:
+//   // export type AlloyNode = Node & { atom: AlloyAtom };
+//   // export type AlloyEdge = Edge & { relation: AlloyRelation; tuple: AlloyTuple };
+// }

@@ -5,7 +5,7 @@ export function parseAlloyXML(xml: string): AlloyDatum {
   const parser = new DOMParser();
   const document = parser.parseFromString(xml, 'application/xml');
   const instances = Array.from(document.querySelectorAll('instance'));
-  if (!instances.length) throw new Error('No instance in Alloy data');
+  if (!instances.length) throw new Error(`No Alloy instance in XML: ${xml}`);
 
   return {
     instances: instances.map(instanceFromElement),

@@ -15,9 +15,9 @@ import {
 } from '@/sterling-theme';
 import { add, Vector2 } from '@/vector2';
 import { current, PayloadAction } from '@reduxjs/toolkit';
-import produce, { castDraft } from 'immer';
+import { produce, castDraft } from 'immer';
 import { WritableDraft } from 'immer/dist/types/types-external';
-import { forEach, remove, set, unset } from 'lodash';
+import { forEach, remove, set, unset } from 'lodash-es';
 import { Matrix } from 'transformation-matrix';
 import { generateLayoutId, GraphsState } from './graphs';
 import { DEFAULT_LAYOUT_SETTINGS } from './graphsDefaults';
